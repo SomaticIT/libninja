@@ -129,7 +129,7 @@ fn rewrite_names(s: &str) -> String {
         return "MinusOne".to_string();
     }
     s.replace('/', "_")
-        .replace(['@', '\'', '+'], "")
+        .replace(['@', '\'', '+', '$'], "")
         .replace(':', " ")
         .replace('.', "_")
 }
