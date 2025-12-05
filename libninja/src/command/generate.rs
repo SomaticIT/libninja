@@ -45,6 +45,55 @@ pub struct Generate {
 }
 
 impl Generate {
+    pub fn new() -> Self {
+        Generate {
+            language: Language::Rust,
+            examples: true,
+            output_dir: None,
+            config: Vec::new(),
+            derive: Vec::new(),
+            name: String::new(),
+            spec_filepath: String::new(),
+        }
+    }
+
+    pub fn with_language(mut self, language: Language) -> Self {
+        self.language = language;
+        self
+    }
+    pub fn with_examples(mut self, examples: bool) -> Self {
+        self.examples = examples;
+        self
+    }
+    pub fn with_output_dir(mut self, output_dir: String) -> Self {
+        self.output_dir = Some(output_dir);
+        self
+    }
+    pub fn with_name(mut self, name: String) -> Self {
+        self.name = name;
+        self
+    }
+    pub fn with_spec_filepath(mut self, spec_filepath: String) -> Self {
+        self.spec_filepath = spec_filepath;
+        self
+    }
+    pub fn add_derive(mut self, derive: String) -> Self {
+        self.derive.push(derive);
+        self
+    }
+    pub fn with_derive(mut self, derive: Vec<String>) -> Self {
+        self.derive = derive;
+        self
+    }
+    pub fn add_config(mut self, config: Flag) -> Self {
+        self.config.push(config);
+        self
+    }
+    pub fn with_config(mut self, config: Vec<Flag>) -> Self {
+        self.config = config;
+        self
+    }
+
     pub fn run(self) -> Result<()> {
         let spec = PathBuf::from(self.spec_filepath);
         let spec = read_spec(&spec)?;
@@ -70,7 +119,7 @@ pub fn read_spec(path: &Path) -> Result<OpenAPI> {
         .map(|s| s.to_str().expect("Extension isn't utf8"))
         .unwrap_or_else(|| "yaml");
     let openapi: VersionedOpenAPI = match ext {
-        "yaml" => serde_yaml::from_reader(file)?,
+        "yaml" | "yml" => serde_yaml::from_reader(file)?,
         "json" => serde_json::from_reader(file)?,
         _ => panic!("Unknown file extension"),
     };
